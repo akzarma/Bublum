@@ -15,7 +15,7 @@ to_download = False
 maximum_classes_to_detect = 90
 
 path = {
-    'image_dir': os.path.join('input', 'images', 'rc'),
+    'image_dir': os.path.join('input', 'images', 'aks'),
     'video_dir': os.path.join('input', 'videos'),
     'video_name': 'final1.mp4',
     'output_image_name': 'my_test',
