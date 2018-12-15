@@ -135,7 +135,7 @@ with detection_graph.as_default():
 
             number = min(config.minimum_detection, output_dict['num_detections'])
             for i in range(number):
-                if output_dict['detection_scores'][i] >= config.min_score_thresh:
+                if output_dict['detection_scores'][i] >= config.min_score_thresh or config.apply_threshold == False:
                     class_name = category_index[output_dict['detection_classes'][i]]['name']
                     if config.detect_all_categories == False and not class_name in config.categories:
                         continue
