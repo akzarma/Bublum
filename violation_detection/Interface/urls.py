@@ -7,3 +7,4 @@ app_name = 'Interface'
 urlpatterns = [
     path('show/', views.show)
 ]
+
