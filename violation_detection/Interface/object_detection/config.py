@@ -1,7 +1,7 @@
 import os
 
 model = {
-    'name': 'rc_graph',
+    'name': 'ssd_resnet50',
     'graph_name': 'frozen_inference_graph.pb',
     'download_base_url': 'http://download.tensorflow.org/models/object_detection/',
     'label': os.path.join('labels', 'rc.pbtxt')
@@ -24,12 +24,12 @@ path = {
     'output_video_dir': os.path.join('output', 'videos', 'final'),
 }
 
-is_image = True
+is_image = False
 generate_video = False
 # Size, in inches, of the output images.
 image_size = (12, 8)
 
-to_show = True
+to_show = False
 
 to_save = True
 save_by_class = True
