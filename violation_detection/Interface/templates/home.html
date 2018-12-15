@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{#<body>#}
+{% block content %}
+
+    <div class="container">
+        <div id="input_div">
+            Video:
+        </div>
+        <button class="btn btn-success btn-circle btn-lg">></button>
+        <div id="first_model" hidden>
+            <div id="model_div" align="center">
+                Current Model:
+            </div>
+            <div id="progress_video">Progress bar</div>
+            <div id="detected_objects"></div>
+        </div>
+        <div id="second_model"></div>
+        <br>
+
+    </div>
+    {#    </form>#}
+
+
+
+{% endblock content %}
