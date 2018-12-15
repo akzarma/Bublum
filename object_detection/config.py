@@ -31,7 +31,7 @@ image_size = (12, 8)
 
 to_show = False
 
-to_save = False
+to_save = True
 save_by_class = True
 
 minimum_detection = 1
