@@ -16,7 +16,7 @@ import tensorflow as tf
 if config.to_download:
     functions.download_graph(config.model['download_base_url'], config.model['file'])
 
-# Load model
+# Load Prediction
 detection_graph = tf.Graph()
 with detection_graph.as_default():
     od_graph_def = tf.GraphDef()
@@ -75,7 +75,7 @@ with detection_graph.as_default():
                 rev, image_np = vidcap.read()
             # the array based representation of the image will be used later in order to prepare the
             # result image with boxes and labels on it.
-            # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+            # Expand dimensions since the Prediction expects images to have shape: [1, None, None, 3]
             image_np_expanded = np.expand_dims(image_np, axis=0)
             # Actual detection.
 
