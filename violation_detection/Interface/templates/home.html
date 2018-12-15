@@ -1,25 +1,39 @@
 {% extends 'base.html' %}
-{#<body>#}
 {% block content %}
 
     <div class="container">
-        <div id="input_div">
-            Video:
-        </div>
-        <button class="btn btn-success btn-circle btn-lg">></button>
-        <div id="first_model" hidden>
-            <div id="model_div" align="center">
-                Current Model:
+        <a class="btn btn-success btn-circle btn-lg" href="{% url 'Interface:prediction' %}">></a>
+        {% if total_frames %}
+            <div id="first_model">
+                <div id="model_div" align="center">
+                    Current Model: {{ model_name }}
+                </div>
+                <div id="progress_video">
+                    <h3>Progress</h3>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0"
+                             aria-valuemax="100" style="width:0%" id="progress">
+
+                        </div>
+                    </div>
+                </div>
+                <div id="detected_objects"></div>
             </div>
-            <div id="progress_video">Progress bar</div>
-            <div id="detected_objects"></div>
-        </div>
-        <div id="second_model"></div>
-        <br>
+        {% endif %}
 
     </div>
-    {#    </form>#}
-
-
+    {% if total_frames %}
+        <script>
+            $.ajax({
+                type: 'POST',
+                url: {% url 'Interface:get_frames' %},
+                success: function (data) {
+                    let bar = document.getElementById('progress');
+                    bar.innerHTML = data + 'frames out of ' + {{ total_frames }} +'frames';
+                    bar.style.width = parseInt(data) / {{ total_frames }} * 100;
+                }
+            })
+        </script>
+    {% endif %}
 
 {% endblock content %}

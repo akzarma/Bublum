@@ -1,7 +1,7 @@
 import os
 
 model = {
-    'name': 'rc_graph',
+    'name': 'ssd_resnet50',
     'graph_name': 'frozen_inference_graph.pb',
     'download_base_url': 'http://download.tensorflow.org/models/object_detection/',
     'label': os.path.join('labels', 'rc.pbtxt')
@@ -46,3 +46,4 @@ categories = ['car', 'motorcycle', 'airplane', 'bus', 'truck', 'traffic light', 
 motor_person_offset_percent = 70
 
 min_score_thresh = 0.5
+apply_threshold = True
