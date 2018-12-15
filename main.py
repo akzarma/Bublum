@@ -45,6 +45,9 @@ else:
     video_path = config.path['video_dir']
     video_name = config.path['video_name']
     video_full = os.path.join(video_path, video_name)
+    print(video_path)
+    if not os.path.exists(config.path['output_video_dir']):
+        os.makedirs(config.path['output_video_dir'])
     vidcap = cv2.VideoCapture(video_full)
     frames = functions.count_frames_manual(vidcap)
     print('total frmames', frames)
@@ -141,10 +144,12 @@ with detection_graph.as_default():
                 base_path = os.path.join(config.path['output_image_dir'], class_name)
                 coord = output_dict['detection_boxes'][i]
                 y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
+                y1 -= (y1 * config.motor_person_offset_percent / 100)
                 y1 = int(y1 * image_np.shape[0])
                 y2 = int(y2 * image_np.shape[0])
                 x1 = int(x1 * image_np.shape[1])
                 x2 = int(x2 * image_np.shape[1])
+
                 cropped_img = image_np[y1:y2, x1:x2]
                 if not os.path.exists(base_path):
                     os.makedirs(base_path)
@@ -158,7 +163,9 @@ with detection_graph.as_default():
                 cv2.imshow('test', cv2.resize(image_np_copy, (800, 600)))
             if config.to_save:
                 if not os.path.exists(config.path['output_image_dir']):
-                    cv2.imwrite(os.path.join(config.path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
+                    os.makedirs(config.path['output_image_dir'])
+
+                cv2.imwrite(os.path.join(config.path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
             counter += 1
             if config.generate_video:
                 write_video_feed.write(image_np_copy)
