@@ -130,35 +130,38 @@ with detection_graph.as_default():
                     category_index,
                     instance_masks=output_dict.get('detection_masks'),
                     use_normalized_coordinates=True,
-                    line_thickness=8)
+                    line_thickness=8,
+                    min_score_thresh=config.min_score_thresh, )
 
             number = min(config.minimum_detection, output_dict['num_detections'])
             for i in range(number):
-                class_name = category_index[output_dict['detection_classes'][i]]['name']
-                if config.detect_all_categories == False and not class_name in config.categories:
-                    continue
+                if output_dict['detection_scores'][i] >= config.min_score_thresh:
+                    class_name = category_index[output_dict['detection_classes'][i]]['name']
+                    if config.detect_all_categories == False and not class_name in config.categories:
+                        continue
 
-                # print(output_dict['detection_scores'][i])
-                # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
-                # print(output_dict['detection_classes'][i])
-                base_path = os.path.join(config.path['output_image_dir'], class_name)
-                coord = output_dict['detection_boxes'][i]
-                y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
-                if class_name == 'motorcycle':
-                    y1 -= ((y2 - y1) * config.motor_person_offset_percent / 100)
-                    if y1 < 0:
-                        y1 = 0
-                y1 = int(y1 * image_np.shape[0])
-                y2 = int(y2 * image_np.shape[0])
-                x1 = int(x1 * image_np.shape[1])
-                x2 = int(x2 * image_np.shape[1])
+                    # print(output_dict['detection_scores'][i])
+                    # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
+                    # print(output_dict['detection_classes'][i])
+                    base_path = os.path.join(config.path['output_image_dir'], class_name)
+                    coord = output_dict['detection_boxes'][i]
+                    y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
+                    if class_name == 'motorcycle':
+                        y1 -= ((y2 - y1) * config.motor_person_offset_percent / 100)
+                        if y1 < 0:
+                            y1 = 0
+                    y1 = int(y1 * image_np.shape[0])
+                    y2 = int(y2 * image_np.shape[0])
+                    x1 = int(x1 * image_np.shape[1])
+                    x2 = int(x2 * image_np.shape[1])
 
-                cropped_img = image_np[y1:y2, x1:x2]
-                if not os.path.exists(base_path):
-                    os.makedirs(base_path)
-                if config.save_by_class:
-                    cv2.imwrite(os.path.join(base_path, str(counter * config.minimum_detection + i) + '.jpg'),
-                                cropped_img)
+                    cropped_img = image_np[y1:y2, x1:x2]
+                    if not os.path.exists(base_path):
+                        os.makedirs(base_path)
+                    if config.save_by_class:
+                        cv2.imwrite(os.path.join(base_path, str(counter * config.minimum_detection + i) + '_' +
+                                                 str(output_dict['detection_scores'][i]) + '.jpg'),
+                                    cropped_img)
             # os.system('eog name.png &')
             # print(output_dict['detection_masks'])
             # print('done')
