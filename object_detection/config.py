@@ -20,7 +20,7 @@ path = {
     'video_name': 'final1.mp4',
     'output_image_name': 'my_test',
     'output_video_name': 'final2.avi',
-    'output_image_dir': os.path.join('output', 'images', 'rc3'),
+    'output_image_dir': os.path.join('output', 'images', 'rc4'),
     'output_video_dir': os.path.join('output', 'videos', 'final'),
 }
 
