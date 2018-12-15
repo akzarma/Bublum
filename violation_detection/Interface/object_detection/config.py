@@ -1,7 +1,7 @@
 import os
 
 model = {
-    'name': 'helmet_mnv2',
+    'name': 'ssd_resnet50',
     'graph_name': 'frozen_inference_graph.pb',
     'download_base_url': 'http://download.tensorflow.org/models/object_detection/',
     'label': os.path.join('labels', 'rc.pbtxt')
@@ -15,12 +15,12 @@ to_download = False
 maximum_classes_to_detect = 90
 
 path = {
-    'image_dir': os.path.join('input', 'images', 'cut_motor'),
+    'image_dir': os.path.join('input', 'images', 'rc'),
     'video_dir': os.path.join('input', 'videos'),
     'video_name': 'final1.mp4',
     'output_image_name': 'my_test',
     'output_video_name': 'final2.avi',
-    'output_image_dir': os.path.join('output', 'images', 'test_helmet'),
+    'output_image_dir': os.path.join('output', 'images', 'rc4'),
     'output_video_dir': os.path.join('output', 'videos', 'final'),
 }
 
@@ -45,5 +45,5 @@ categories = ['car', 'motorcycle', 'airplane', 'bus', 'truck', 'traffic light', 
 # 100%=doubling the image
 motor_person_offset_percent = 70
 
-min_score_thresh = 0.15
+min_score_thresh = 0.5
 apply_threshold = True

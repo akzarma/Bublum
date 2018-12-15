@@ -4,12 +4,11 @@ import numpy as np
 import cv2
 import copy
 
-from object_detection import config
-from object_detection import functions
+from violation_detection.Interface.object_detection import config
+from violation_detection.Interface.object_detection import functions
 
-from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as vis_util
-from object_detection.utils import ops as utils_ops
+from violation_detection.Interface.object_detection.utils import label_map_util, ops as utils_ops, \
+    visualization_utils as vis_util
 
 import tensorflow as tf
 
@@ -64,7 +63,6 @@ else:
                                        (frame_width, frame_height))
 with detection_graph.as_default():
     with tf.Session() as sess:
-
         for each_image in all_images:
 
             if config.is_image:
