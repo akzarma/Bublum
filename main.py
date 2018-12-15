@@ -144,7 +144,9 @@ with detection_graph.as_default():
                 base_path = os.path.join(config.path['output_image_dir'], class_name)
                 coord = output_dict['detection_boxes'][i]
                 y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
-                y1 -= (y1 * config.motor_person_offset_percent / 100)
+                y1 -= ((y2 - y1) * config.motor_person_offset_percent / 100)
+                if y1 < 0:
+                    y1 = 0
                 y1 = int(y1 * image_np.shape[0])
                 y2 = int(y2 * image_np.shape[0])
                 x1 = int(x1 * image_np.shape[1])

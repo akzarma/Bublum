@@ -20,7 +20,7 @@ path = {
     'video_name': 'final1.mp4',
     'output_image_name': 'my_test',
     'output_video_name': 'final2.avi',
-    'output_image_dir': os.path.join('output', 'images', 'modified_motor'),
+    'output_image_dir': os.path.join('output', 'images', 'modified_motor40'),
     'output_video_dir': os.path.join('output', 'videos','final'),
 }
 
@@ -42,4 +42,4 @@ show_labels = True
 categories = ['car', 'motorcycle', 'airplane', 'bus', 'truck', 'traffic light', 'person']
 # categories = ['motorcycle']
 
-motor_person_offset_percent = 30
+motor_person_offset_percent = 50
