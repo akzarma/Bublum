@@ -157,7 +157,8 @@ with detection_graph.as_default():
             if config.to_show:
                 cv2.imshow('test', cv2.resize(image_np_copy, (800, 600)))
             if config.to_save:
-                cv2.imwrite(os.path.join(config.path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
+                if not os.path.exists(config.path['output_image_dir']):
+                    cv2.imwrite(os.path.join(config.path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
             counter += 1
             if config.generate_video:
                 write_video_feed.write(image_np_copy)
