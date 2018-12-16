@@ -2,24 +2,77 @@
 {% block content %}
 
     <div class="container">
-        <button class="btn btn-success btn-circle btn-lg" onclick="sendPredictionRequest()">></button>
-        <div id="prediction" hidden>
-            <div id="model_div" align="center">
-                <h3>Current Model: </h3>
-                <h3 id="model_name"></h3>
-            </div>
-            <div id="progress_video">
-                <h3>Progress</h3>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0"
-                         aria-valuemax="100" style="width:0%" id="progress">
+    <div align="center">
+        <button class="btn btn-success" style="margin: 2.5%; size: 1.5em; border-radius: 30%;"
+                onclick="sendPredictionRequest('1')">Start
+        </button>
+    </div>
+    <div id="current_model" align="center" hidden>
+        <h3>Current Model: </h3>
+        <h3 id="model_name"></h3>
+    </div>
+    <div class="container">
+        <div class="col-md-4">
+            <div id="model_1" hidden>
+                <div id="progress_video">
+                    <h3>Progress</h3>
+                    <h3 id="frames_processed"></h3>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
+                             id="progress">
 
+                        </div>
                     </div>
                 </div>
+                <div id="detected_objects"></div>
+                <br/>
+                <br/>
+                <br/>
+                <div align="center">
+                    <button class="btn btn-primary btn-circle btn-lg" onclick="sendPredictionRequest('2')">>
+                    </button>
+                </div>
             </div>
-            <div id="detected_objects"></div>
         </div>
+        <div class="col-md-4">
+            <div id="model_2" hidden>
+                <div id="progress_video">
+                    <h4>Progress</h4>
+                    <h4 id="frames_processed"></h4>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
+                             id="progress">
 
+                        </div>
+                    </div>
+                </div>
+                <div id="detected_objects"></div>
+                <br/>
+                <br/>
+                <br/>
+                <div align="center">
+                    <button class="btn btn-primary btn-circle btn-lg" onclick="sendPredictionRequest('3')">>
+                    </button>
+                </div>
+
+            </div>
+            <div class="col-md-4">
+                <div id="model_3" hidden>
+                    <div id="progress_video">
+                        <h3>Progress</h3>
+                        <h3 id="frames_processed"></h3>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
+                                 id="progress">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="detected_objects"></div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
 
@@ -30,15 +83,17 @@
     <script>
         var total_frames;
 
-        function sendPredictionRequest() {
+        function sendPredictionRequest(model_number) {
             $.ajax({
                 type: 'POST',
                 url: "{% url 'Interface:prediction' %}",
                 data: {
                     'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    'model_name': model_number
                 }
             });
-            document.getElementById('prediction').hidden = false;
+            document.getElementById('current_model').hidden = false;
+            document.getElementById('model_' + model_number).hidden = false;
             get_first_response();
         }
 
@@ -53,6 +108,7 @@
                     let parsed = JSON.parse(data);
                     document.getElementById('model_name').innerHTML = parsed['model_name'];
                     total_frames = parseInt(parsed['total_frames']);
+                    console.log(data);
 
                     get_frames();
 
@@ -61,7 +117,7 @@
         }
 
         function get_frames() {
-            setInterval(function () {
+            var interval = setInterval(function () {
                 $.ajax({
                     type: 'POST',
                     url: "{% url 'Interface:get_frames' %}",
@@ -72,12 +128,22 @@
                         let parsed_data = JSON.parse(data);
                         console.log(JSON.parse(data));
                         let total_frames = parseInt(parsed_data['total_frames']);
+
+                        document.getElementById('frames_processed').innerHTML = parsed_data['frames_done'] + '/' + total_frames + ' frames';
+
+
                         let bar = document.getElementById('progress');
-                        bar.innerHTML = parsed_data['frames_done'] + 'frames out of ' + total_frames + 'frames';
-                        bar.style.width = parseInt(parsed_data['frames_done']) / total_frames * 100;
+                        bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%';
+                        bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%');
+
+                        if (parsed_data['frames_done'] + 1 >= total_frames && total_frames != 0) {
+                            clearInterval(interval);
+
+                        }
+                        {#bar.style.width = parseInt(parsed_data['frames_done']) / total_frames * 100;#}
                     }
                 })
-            }, 5000);
+            }, 1000);
 
         }
     </script>

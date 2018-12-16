@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 import copy
 
-from Interface.object_detection import config
-from Interface.object_detection import functions
+from object_detection import config
+from object_detection import functions
 
-from Interface.object_detection.utils import label_map_util, ops as utils_ops, \
+from object_detection.utils import label_map_util, ops as utils_ops, \
     visualization_utils as vis_util
 
 import tensorflow as tf
