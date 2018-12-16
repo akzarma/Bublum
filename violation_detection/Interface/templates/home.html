@@ -133,8 +133,8 @@
 
 
                         let bar = document.getElementById('progress');
-                        bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%';
-                        bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%');
+                        bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%';
+                        bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%');
 
                         if (parsed_data['frames_done'] + 1 >= total_frames && total_frames != 0) {
                             clearInterval(interval);

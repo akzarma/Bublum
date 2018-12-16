@@ -65,7 +65,7 @@ def vehicle_model(request):
         if current_model == 1:
             all_images = os.listdir(base_dir)
         elif current_model == 2:
-            all_images = Vehicle.objects.filter(is_done=False)
+            all_images = list(Vehicle.objects.filter(is_done=False).values_list('image_path', flat=True))
 
         global total_frames
         total_frames = len(all_images)
@@ -101,7 +101,10 @@ def vehicle_model(request):
                 global frames_done
                 frames_done = all_images.index(each_image)
                 if is_image:
-                    image_path = os.path.join(base_dir, each_image)
+                    if current_model == 1:
+                        image_path = os.path.join(base_dir, each_image)
+                    else:
+                        image_path = each_image
                     image = Image.open(image_path)
                     image_np = load_image_into_numpy_array(image)
                 else:
@@ -169,24 +172,37 @@ def vehicle_model(request):
                 number = min(minimum_detection, output_dict['num_detections'])
                 if current_model == 2:
                     number = 1
+                print(number)
+                print(current_model == 1)
+                # print('current_model0', current_model, '\n')
                 for i in range(number):
+                    print(output_dict['detection_scores'][i])
                     if output_dict['detection_scores'][i] >= min_score_thresh:
                         class_name = category_index[output_dict['detection_classes'][i]]['name']
-                        if detect_all_categories == False and not class_name in categories:
+                        # print(class_name,categories)
+                        if detect_all_categories == False and not {'name': class_name,
+                                                                   'id': output_dict['detection_classes'][
+                                                                       i]} in categories:
+                            # print('Skipping')
                             continue
+                        base_path = os.path.join(path['output_image_dir'], class_name)
+
                         if current_model == 1:
+                            # print('It is one')
                             curr_vehicle_obj = Vehicle.objects.create(type=class_name)
-                            current_name = str(curr_vehicle_obj.pk) + '_vehicle.img'
+
+                            current_name = str(curr_vehicle_obj.pk) + '_vehicle.jpg'
+                            curr_vehicle_obj.image_path = os.path.join(base_path, current_name)
+
                             curr_vehicle_obj.save()
                         elif current_model == 2:
                             curr_vehicle_obj = Vehicle.objects.get(is_done=False, image_path=each_image)
-                            curr_vehicle_obj.rc_path =str(curr_vehicle_obj.pk) + '_rc.img'
-                            current_name = str(curr_vehicle_obj.pk) + '_rc.img'
+                            current_name = str(curr_vehicle_obj.pk) + '_rc.jpg'
+                            curr_vehicle_obj.rc_path = os.path.join(base_path, current_name)
                             curr_vehicle_obj.save()
                             # print(output_dict['detection_scores'][i])
                         # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
                         # print(output_dict['detection_classes'][i])
-                        base_path = os.path.join(path['output_image_dir'], class_name)
                         coord = output_dict['detection_boxes'][i]
                         y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
                         if class_name == 'motorcycle':

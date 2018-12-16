@@ -29,7 +29,7 @@ generate_video = False
 # Size, in inches, of the output images.
 image_size = (12, 8)
 
-to_show = False
+to_show = True
 
 to_save = True
 save_by_class = True
@@ -47,4 +47,3 @@ motor_person_offset_percent = 70
 
 min_score_thresh = 0.5
 apply_threshold = True
-
