@@ -20,9 +20,9 @@ import six
 
 import tensorflow as tf
 
-from violation_detection.Interface.object_detection.core import box_list, box_list_ops, standard_fields as fields
-from violation_detection.Interface.object_detection.utils import shape_utils
-from violation_detection.Interface.object_detection.utils import static_shape
+from object_detection.core import box_list, box_list_ops, standard_fields as fields
+from object_detection.utils import shape_utils
+from object_detection.utils import static_shape
 
 
 def expanded_shape(orig_shape, start_dim, num_dims):

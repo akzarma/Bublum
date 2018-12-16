@@ -8,16 +8,22 @@ import numpy as np
 import cv2
 import copy
 
-from violation_detection.Interface.object_detection import config
-from violation_detection.Interface.object_detection import functions
-
-from violation_detection.Interface.object_detection.utils import label_map_util, ops as utils_ops, \
-    visualization_utils as vis_util
+# from Interface.object_detection.config import *
 
 import tensorflow as tf
 
-frames_done=0
+from object_detection.config import *
+from object_detection.functions import download_graph, load_image_into_numpy_array, \
+    count_frames_manual
+from object_detection.utils import label_map_util
+from object_detection.utils.ops import reframe_box_masks_to_image_masks
+from object_detection.utils.visualization_utils import visualize_boxes_and_labels_on_image_array
 
+frames_done = 0
+total_frames = 0
+
+
+# from
 
 # Create your views here.
 def show(request):
@@ -25,21 +31,21 @@ def show(request):
 
 
 def vehicle_model(request):
-    if config.to_download:
-        functions.download_graph(config.model['download_base_url'], config.model['file'])
+    if to_download:
+        download_graph(model['download_base_url'], model['file'])
 
     # Load Prediction
     detection_graph = tf.Graph()
     with detection_graph.as_default():
         od_graph_def = tf.GraphDef()
-        with tf.gfile.GFile(config.model['path'], 'rb') as fid:
+        with tf.gfile.GFile(model['path'], 'rb') as fid:
             serialized_graph = fid.read()
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name='')
 
-    label_map = label_map_util.load_labelmap(config.model['label'])
+    label_map = label_map_util.load_labelmap(model['label'])
     categories = label_map_util.convert_label_map_to_categories(label_map,
-                                                                max_num_classes=config.maximum_classes_to_detect,
+                                                                max_num_classes=maximum_classes_to_detect,
                                                                 use_display_name=True)
     category_index = label_map_util.create_category_index(categories)
 
@@ -50,21 +56,23 @@ def vehicle_model(request):
 
     write_video_feed = ''
 
-    if config.is_image:
-        base_dir = config.path['image_dir']
+    if is_image:
+        base_dir = path['image_dir']
         all_images = os.listdir(base_dir)
 
     else:
-        video_path = config.path['video_dir']
-        video_name = config.path['video_name']
+        video_path = path['video_dir']
+        video_name = path['video_name']
         video_full = os.path.join(video_path, video_name)
         print(video_path)
-        if not os.path.exists(config.path['output_video_dir']):
-            os.makedirs(config.path['output_video_dir'])
+        if not os.path.exists(path['output_video_dir']):
+            os.makedirs(path['output_video_dir'])
         vidcap = cv2.VideoCapture(video_full)
-        frames = functions.count_frames_manual(vidcap)
+        frames = count_frames_manual(vidcap)
         print('total frmames', frames)
         all_images = range(frames)
+        global total_frames
+        total_frames = len(all_images)
         vidcap.release()
         vidcap = cv2.VideoCapture(video_full)
         frame_width = int(vidcap.get(3))
@@ -72,7 +80,7 @@ def vehicle_model(request):
         fps = vidcap.get(cv2.CAP_PROP_FPS)
         fps_int = int(round(fps))
         write_video_feed = cv2.VideoWriter(
-            os.path.join(config.path['output_video_dir'], config.path['output_video_name']),
+            os.path.join(path['output_video_dir'], path['output_video_name']),
             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
             fps_int,
             (frame_width, frame_height))
@@ -80,11 +88,11 @@ def vehicle_model(request):
         with tf.Session() as sess:
             for each_image in all_images:
                 global frames_done
-                frames_done= all_images.index(each_image)
-                if config.is_image:
+                frames_done = all_images.index(each_image)
+                if is_image:
                     image_path = os.path.join(base_dir, each_image)
                     image = Image.open(image_path)
-                    image_np = functions.load_image_into_numpy_array(image)
+                    image_np = load_image_into_numpy_array(image)
                 else:
                     rev, image_np = vidcap.read()
                 # the array based representation of the image will be used later in order to prepare the
@@ -112,7 +120,7 @@ def vehicle_model(request):
                     real_num_detection = tf.cast(tensor_dict['num_detections'][0], tf.int32)
                     detection_boxes = tf.slice(detection_boxes, [0, 0], [real_num_detection, -1])
                     detection_masks = tf.slice(detection_masks, [0, 0, 0], [real_num_detection, -1, -1])
-                    detection_masks_reframed = utils_ops.reframe_box_masks_to_image_masks(
+                    detection_masks_reframed = reframe_box_masks_to_image_masks(
                         detection_masks, detection_boxes, image_np.shape[0], image_np.shape[1])
                     detection_masks_reframed = tf.cast(
                         tf.greater(detection_masks_reframed, 0.5), tf.uint8)
@@ -135,8 +143,8 @@ def vehicle_model(request):
                     output_dict['detection_masks'] = output_dict['detection_masks'][0]
 
                 image_np_copy = copy.deepcopy(image_np)
-                if config.show_labels:
-                    vis_util.visualize_boxes_and_labels_on_image_array(
+                if show_labels:
+                    visualize_boxes_and_labels_on_image_array(
                         image_np_copy,
                         output_dict['detection_boxes'],
                         output_dict['detection_classes'],
@@ -145,23 +153,23 @@ def vehicle_model(request):
                         instance_masks=output_dict.get('detection_masks'),
                         use_normalized_coordinates=True,
                         line_thickness=8,
-                        min_score_thresh=config.min_score_thresh, )
+                        min_score_thresh=min_score_thresh, )
 
-                number = min(config.minimum_detection, output_dict['num_detections'])
+                number = min(minimum_detection, output_dict['num_detections'])
                 for i in range(number):
-                    if output_dict['detection_scores'][i] >= config.min_score_thresh:
+                    if output_dict['detection_scores'][i] >= min_score_thresh:
                         class_name = category_index[output_dict['detection_classes'][i]]['name']
-                        if config.detect_all_categories == False and not class_name in config.categories:
+                        if detect_all_categories == False and not class_name in categories:
                             continue
 
                         # print(output_dict['detection_scores'][i])
                         # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
                         # print(output_dict['detection_classes'][i])
-                        base_path = os.path.join(config.path['output_image_dir'], class_name)
+                        base_path = os.path.join(path['output_image_dir'], class_name)
                         coord = output_dict['detection_boxes'][i]
                         y1, x1, y2, x2 = coord[0], coord[1], coord[2], coord[3]
                         if class_name == 'motorcycle':
-                            y1 -= ((y2 - y1) * config.motor_person_offset_percent / 100)
+                            y1 -= ((y2 - y1) * motor_person_offset_percent / 100)
                             if y1 < 0:
                                 y1 = 0
                         y1 = int(y1 * image_np.shape[0])
@@ -172,22 +180,22 @@ def vehicle_model(request):
                         cropped_img = image_np[y1:y2, x1:x2]
                         if not os.path.exists(base_path):
                             os.makedirs(base_path)
-                        if config.save_by_class:
-                            cv2.imwrite(os.path.join(base_path, str(counter * config.minimum_detection + i) + '_' +
+                        if save_by_class:
+                            cv2.imwrite(os.path.join(base_path, str(counter * minimum_detection + i) + '_' +
                                                      str(output_dict['detection_scores'][i]) + '.jpg'),
                                         cropped_img)
                 # os.system('eog name.png &')
                 # print(output_dict['detection_masks'])
                 # print('done')
-                if config.to_show:
+                if to_show:
                     cv2.imshow('test', cv2.resize(image_np_copy, (800, 600)))
-                if config.to_save:
-                    if not os.path.exists(config.path['output_image_dir']):
-                        os.makedirs(config.path['output_image_dir'])
+                if to_save:
+                    if not os.path.exists(path['output_image_dir']):
+                        os.makedirs(path['output_image_dir'])
 
-                    cv2.imwrite(os.path.join(config.path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
+                    cv2.imwrite(os.path.join(path['output_image_dir'], str(counter) + '.jpg'), image_np_copy)
                 counter += 1
-                if config.generate_video:
+                if generate_video:
                     write_video_feed.write(image_np_copy)
                     print('curr:', each_image)
                 if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -196,15 +204,18 @@ def vehicle_model(request):
                 # if cv2.waitKey(25) & 0xFF == ord('q'):
                 #     break
     cv2.destroyAllWindows()
-    if not config.is_image:
+    if not is_image:
         write_video_feed.release()
-    return render(request, 'home.html',{
-        'total_frames' : len(all_images),
-        'model_name': config.model['name']
-    })
+
+
+def get_first_response(request):
+    global total_frames
+    response = {'total_frames': total_frames, 'model_name': model['name']}
+    return HttpResponse(json.dumps(response))
 
 
 def get_frames(request):
     global frames_done
-    response = {'frames_done': frames_done}
+    global total_frames
+    response = {'frames_done': frames_done, 'total_frames': total_frames}
     return HttpResponse(json.dumps(response))

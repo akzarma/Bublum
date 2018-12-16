@@ -3,7 +3,7 @@ import os
 import tarfile
 import numpy as np
 
-from violation_detection.Interface.object_detection.utils import ops as utils_ops
+from object_detection.utils import ops as utils_ops
 
 
 def download_graph(base, model_file):
