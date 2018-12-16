@@ -221,6 +221,10 @@ def vehicle_model(request):
     cv2.destroyAllWindows()
     if not is_image:
         write_video_feed.release()
+    global total_frames
+    total_frames = 0
+    global frames_done
+    frames_done = 0
     return HttpResponse('Success')
 
 
