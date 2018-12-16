@@ -47,3 +47,4 @@ motor_person_offset_percent = 70
 
 min_score_thresh = 0.5
 apply_threshold = True
+
