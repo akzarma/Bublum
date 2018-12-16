@@ -19,6 +19,8 @@ from object_detection.utils import label_map_util
 from object_detection.utils.ops import reframe_box_masks_to_image_masks
 from object_detection.utils.visualization_utils import visualize_boxes_and_labels_on_image_array
 
+from violation_detection.Interface.models import Vehicle
+
 frames_done = 0
 total_frames = 0
 
@@ -31,6 +33,7 @@ def show(request):
 
 
 def vehicle_model(request):
+    current_model = int(request.POST.get('model_name'))
     if to_download:
         download_graph(model['download_base_url'], model['file'])
 
@@ -59,7 +62,11 @@ def vehicle_model(request):
 
     if is_image:
         base_dir = path['image_dir']
-        all_images = os.listdir(base_dir)
+        if current_model == 1:
+            all_images = os.listdir(base_dir)
+        elif current_model == 2:
+            all_images = Vehicle.objects.filter(is_done=False)
+
 
     else:
         video_path = path['video_dir']
@@ -157,13 +164,21 @@ def vehicle_model(request):
                         min_score_thresh=min_score_thresh, )
 
                 number = min(minimum_detection, output_dict['num_detections'])
+                if current_model == 2:
+                    number = 1
                 for i in range(number):
                     if output_dict['detection_scores'][i] >= min_score_thresh:
                         class_name = category_index[output_dict['detection_classes'][i]]['name']
                         if detect_all_categories == False and not class_name in categories:
                             continue
-
-                        # print(output_dict['detection_scores'][i])
+                        if current_model == 1:
+                            curr_vehicle_obj = Vehicle.objects.create(type=class_name)
+                            current_name = str(curr_vehicle_obj.pk) + '_vehicle.img'
+                        elif current_model == 2:
+                            curr_vehicle_obj = Vehicle.objects.get(is_done=False, image_path=each_image)
+                            curr_vehicle_obj.rc_path =
+                            current_name = str(curr_vehicle_obj.pk) + '_rc.img'
+                            # print(output_dict['detection_scores'][i])
                         # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
                         # print(output_dict['detection_classes'][i])
                         base_path = os.path.join(path['output_image_dir'], class_name)
@@ -182,8 +197,7 @@ def vehicle_model(request):
                         if not os.path.exists(base_path):
                             os.makedirs(base_path)
                         if save_by_class:
-                            cv2.imwrite(os.path.join(base_path, str(counter * minimum_detection + i) + '_' +
-                                                     str(output_dict['detection_scores'][i]) + '.jpg'),
+                            cv2.imwrite(os.path.join(base_path, current_name),
                                         cropped_img)
                 # os.system('eog name.png &')
                 # print(output_dict['detection_masks'])

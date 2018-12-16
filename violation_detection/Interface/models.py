@@ -5,10 +5,13 @@ from django.db import models
 
 
 class Vehicle(models.Model):
-    number = models.CharField(max_length=15)
-    mobile = models.PositiveIntegerField()
-    address = models.CharField(max_length=250)
+    number = models.CharField(max_length=15, null=True, blank=True)
+    mobile = models.PositiveIntegerField(default='8554951545')
+    address = models.CharField(max_length=250, default='test')
     type = models.CharField(max_length=100)
+    image_path = models.CharField(max_length=500)
+    rc_path = models.CharField(max_length=500)
+    is_done = models.BooleanField(default=False)
 
 
 class Camera(models.Model):
@@ -27,7 +30,7 @@ class VehicleViolation(models.Model):
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
     violation = models.ForeignKey(Violation, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
-    is_paid = models.BooleanField(default=False)
+    has_paid = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
 # class Config(models.Model):
