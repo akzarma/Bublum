@@ -11,7 +11,7 @@
         <h3>Current Model: </h3>
         <h3 id="model_name"></h3>
     </div>
-    <div class="container">
+    <div class="row">
         <div class="col-md-4">
             <div id="model_1" hidden>
                 <div id="progress_video">
@@ -19,7 +19,7 @@
                     <h3 id="frames_processed"></h3>
                     <div class="progress">
                         <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
-                             id="progress">
+                             id="progress_1">
 
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                     <h4 id="frames_processed"></h4>
                     <div class="progress">
                         <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
-                             id="progress">
+                             id="progress_2">
 
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                         <h3 id="frames_processed"></h3>
                         <div class="progress">
                             <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
-                                 id="progress">
+                                 id="progress_3">
 
                             </div>
                         </div>
@@ -82,6 +82,7 @@
 
     <script>
         var total_frames;
+        var current_frame;
 
         function sendPredictionRequest(model_number) {
             $.ajax({
@@ -94,6 +95,7 @@
             });
             document.getElementById('current_model').hidden = false;
             document.getElementById('model_' + model_number).hidden = false;
+            current_frame = model_number;
             get_first_response();
         }
 
@@ -132,7 +134,7 @@
                         document.getElementById('frames_processed').innerHTML = parsed_data['frames_done'] + '/' + total_frames + ' frames';
 
 
-                        let bar = document.getElementById('progress');
+                        let bar = document.getElementById('progress_'+ current_frame);
                         bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%';
                         bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%');
 
