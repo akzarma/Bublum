@@ -11,52 +11,9 @@
         <h3>Current Model: </h3>
         <h3 id="model_name"></h3>
     </div>
-    <div class="col-md-4">
-        <div id="model_1" hidden>
-            <div id="progress_video">
-                <h3>Progress</h3>
-                <h3 id="frames_processed"></h3>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
-                         id="progress">
-
-                    </div>
-                </div>
-            </div>
-            <div id="detected_objects"></div>
-            <br/>
-            <br/>
-            <br/>
-            <div align="center">
-                <button class="btn btn-primary btn-circle btn-lg" disabled onclick="sendPredictionRequest('2')">>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div id="model_2" hidden>
-            <div id="progress_video">
-                <h4>Progress</h4>
-                <h4 id="frames_processed"></h4>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
-                         id="progress">
-
-                    </div>
-                </div>
-            </div>
-            <div id="detected_objects"></div>
-            <br/>
-            <br/>
-            <br/>
-            <div align="center">
-                <button class="btn btn-primary btn-circle btn-lg" disabled onclick="sendPredictionRequest('3')">>
-                </button>
-            </div>
-
-        </div>
+    <div class="container">
         <div class="col-md-4">
-            <div id="model_3" hidden>
+            <div id="model_1" hidden>
                 <div id="progress_video">
                     <h3>Progress</h3>
                     <h3 id="frames_processed"></h3>
@@ -68,9 +25,54 @@
                     </div>
                 </div>
                 <div id="detected_objects"></div>
+                <br/>
+                <br/>
+                <br/>
+                <div align="center">
+                    <button class="btn btn-primary btn-circle btn-lg" onclick="sendPredictionRequest('2')">>
+                    </button>
+                </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div id="model_2" hidden>
+                <div id="progress_video">
+                    <h4>Progress</h4>
+                    <h4 id="frames_processed"></h4>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
+                             id="progress">
 
+                        </div>
+                    </div>
+                </div>
+                <div id="detected_objects"></div>
+                <br/>
+                <br/>
+                <br/>
+                <div align="center">
+                    <button class="btn btn-primary btn-circle btn-lg" onclick="sendPredictionRequest('3')">>
+                    </button>
+                </div>
+
+            </div>
+            <div class="col-md-4">
+                <div id="model_3" hidden>
+                    <div id="progress_video">
+                        <h3>Progress</h3>
+                        <h3 id="frames_processed"></h3>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar" style="width:0%"
+                                 id="progress">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="detected_objects"></div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
 
@@ -106,6 +108,7 @@
                     let parsed = JSON.parse(data);
                     document.getElementById('model_name').innerHTML = parsed['model_name'];
                     total_frames = parseInt(parsed['total_frames']);
+                    console.log(data);
 
                     get_frames();
 
@@ -130,12 +133,12 @@
 
 
                         let bar = document.getElementById('progress');
-                        bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%';
-                        bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + '%');
-                        console.log(parseInt(parsed_data['frames_done']) / total_frames * 100 + '%');
+                        bar.innerHTML = (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%';
+                        bar.setAttribute('style', 'width:' + (parseInt(parsed_data['frames_done']) / total_frames) * 100 + 1 + '%');
 
-                        if (parsed_data['frames_done'] + 1 >= total_frames) {
+                        if (parsed_data['frames_done'] + 1 >= total_frames && total_frames != 0) {
                             clearInterval(interval);
+
                         }
                         {#bar.style.width = parseInt(parsed_data['frames_done']) / total_frames * 100;#}
                     }

@@ -19,7 +19,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils.ops import reframe_box_masks_to_image_masks
 from object_detection.utils.visualization_utils import visualize_boxes_and_labels_on_image_array
 
-from violation_detection.Interface.models import Vehicle
+from .models import Vehicle
 
 frames_done = 0
 total_frames = 0
@@ -66,6 +66,9 @@ def vehicle_model(request):
             all_images = os.listdir(base_dir)
         elif current_model == 2:
             all_images = Vehicle.objects.filter(is_done=False)
+
+        global total_frames
+        total_frames = len(all_images)
 
 
     else:
@@ -174,10 +177,12 @@ def vehicle_model(request):
                         if current_model == 1:
                             curr_vehicle_obj = Vehicle.objects.create(type=class_name)
                             current_name = str(curr_vehicle_obj.pk) + '_vehicle.img'
+                            curr_vehicle_obj.save()
                         elif current_model == 2:
                             curr_vehicle_obj = Vehicle.objects.get(is_done=False, image_path=each_image)
-                            curr_vehicle_obj.rc_path =
+                            curr_vehicle_obj.rc_path =str(curr_vehicle_obj.pk) + '_rc.img'
                             current_name = str(curr_vehicle_obj.pk) + '_rc.img'
+                            curr_vehicle_obj.save()
                             # print(output_dict['detection_scores'][i])
                         # cv2.imshow('test', cv2.resize(image_np, (800, 600)))
                         # print(output_dict['detection_classes'][i])

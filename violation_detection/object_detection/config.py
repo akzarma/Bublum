@@ -15,17 +15,17 @@ to_download = False
 maximum_classes_to_detect = 90
 
 path = {
-    'image_dir': os.path.join('input', 'images', 'aks'),
+    'image_dir': os.path.join('input', 'images', 'random_traffic'),
     'video_dir': os.path.join('input', 'videos'),
     'video_name': 'final1.mp4',
     'output_image_name': 'my_test',
     'output_video_name': 'final_django.avi',
-    'output_image_dir': os.path.join('output', 'images', 'rc4'),
+    'output_image_dir': os.path.join('output', 'images', 'random_traffic'),
     'output_video_dir': os.path.join('output', 'videos', 'django'),
 }
 
-is_image = False
-generate_video = True
+is_image = True
+generate_video = False
 # Size, in inches, of the output images.
 image_size = (12, 8)
 
