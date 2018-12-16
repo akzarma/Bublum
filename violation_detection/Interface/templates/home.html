@@ -73,8 +73,9 @@
                         console.log(JSON.parse(data));
                         let total_frames = parseInt(parsed_data['total_frames']);
                         let bar = document.getElementById('progress');
-                        bar.innerHTML = parsed_data['frames_done'] + 'frames out of ' + total_frames + 'frames';
-                        bar.style.width = parseInt(parsed_data['frames_done']) / total_frames * 100;
+                        bar.innerHTML = parsed_data['frames_done'] + ' frames out of ' + total_frames + ' frames';
+                        bar.setAttribute('style','width=' + parseInt(parsed_data['frames_done']) / total_frames * 100 + '%');
+                        {#bar.style.width = parseInt(parsed_data['frames_done']) / total_frames * 100;#}
                     }
                 })
             }, 5000);
