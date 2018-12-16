@@ -17,19 +17,19 @@ maximum_classes_to_detect = 90
 path = {
     'image_dir': os.path.join('input', 'images', 'random_traffic'),
     'video_dir': os.path.join('input', 'videos'),
-    'video_name': 'final1.mp4',
+    'video_name': 'final_final.mp4',
     'output_image_name': 'my_test',
     'output_video_name': 'final_django.avi',
     'output_image_dir': os.path.join('output', 'images', 'random_traffic'),
-    'output_video_dir': os.path.join('output', 'videos', 'django'),
+    'output_video_dir': os.path.join('output', 'videos', 'final_final'),
 }
 
-is_image = True
-generate_video = False
+is_image = False
+generate_video = True
 # Size, in inches, of the output images.
 image_size = (12, 8)
 
-to_show = True
+to_show = False
 
 to_save = True
 save_by_class = True
@@ -39,7 +39,7 @@ minimum_detection = 20
 detect_all_categories = False
 show_labels = True
 
-categories = ['car', 'motorcycle', 'airplane', 'bus', 'truck', 'traffic light', 'person']
+categories = ['car', 'motorcycle', 'airplane', 'bus', 'truck', 'traffic light']
 # categories = ['motorcycle']
 
 # 100%=doubling the image
